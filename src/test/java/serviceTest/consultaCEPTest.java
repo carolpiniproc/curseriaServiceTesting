@@ -1,13 +1,12 @@
-package ServiceTest;
+package serviceTest;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import org.junit.Test;
-
 import java.util.LinkedHashMap;
-
 import static org.junit.Assert.assertEquals;
 
 public class consultaCEPTest {
@@ -37,6 +36,16 @@ public class consultaCEPTest {
 
         assertEquals("Rua Hermantino Coelho", json.get("logradouro"));
     }
+
+    @Test
+    public void validaDadosCEP(){
+        String cep = "13087500";
+        String endpoint = cep.concat("/json/");
+        LinkedHashMap<String, String> header = new LinkedHashMap<>();
+        header.put("clientId", "curso");
+        header.put("Authorization", "Basic");
+    }
+
 
     @Test
     public void consultaCEPHeaders(){
