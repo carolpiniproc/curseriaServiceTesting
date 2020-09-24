@@ -1,6 +1,4 @@
-package test;
-
-import org.junit.Test;
+package exampleTest;
 
 public class TestClass {
     int nota1;
