@@ -14,17 +14,17 @@ public class Pet {
         pet.put("tags", tags);
         pet.put("status", status);
 
-        public void setPet (Category category, Object name, List<Object>){
-            pet.put(key,value);
-        }
-
-        public void set (LinkedHashMap<String, Object> map){
-            pet.putAll(map);
-        }
-
-        public LinkedHashMap<String, Object> get() {
-            return pet;
-        }
+//        public void setPet (Category category, Object name, List<Object>){
+//            pet.put(key,value);
+//        }
+//
+//        public void set (LinkedHashMap<String, Object> map){
+//            pet.putAll(map);
+//        }
+//
+//        public LinkedHashMap<String, Object> get() {
+//            return pet;
+//        }
 
     }
 }

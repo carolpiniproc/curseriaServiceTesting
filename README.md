@@ -1,5 +1,5 @@
 # curseriaServiceTesting
-Service exampleTest automation framework - Using Java + Junit
+Service examples automation framework - Using Java + Junit
 
 ## Requirements  
 1 - JDK > 1.8  
