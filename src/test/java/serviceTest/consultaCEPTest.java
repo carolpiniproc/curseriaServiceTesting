@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import org.junit.Test;
 
 import java.util.LinkedHashMap;
@@ -20,13 +21,9 @@ public class consultaCEPTest {
         String endpoint = cep.concat("/json/"); // ou pode usar endpoint = cep+"/json/";
 
         RestAssured.baseURI = url;
-        RestAssured.given()
-                .relaxedHTTPSValidation() //SSL para sites com certificado não válido
-                .contentType(ContentType.JSON)
-                .when()
-                .get(endpoint)
-                .then()
-                .statusCode(200);
+
+        Response response = get(endpoint);
+        assertEquals(200, response.statusCode());
     }
 
     @Test
@@ -39,9 +36,7 @@ public class consultaCEPTest {
 
         RestAssured.baseURI = url;
 
-        Response response = RestAssured.given()
-                .relaxedHTTPSValidation() //SSL para sites com certificado não válido
-                .contentType(ContentType.JSON)
+        Response response = initRequest(ContentType.JSON)
                 .headers(header)
                 .when()
                 .get(endpoint)
@@ -68,9 +63,7 @@ public class consultaCEPTest {
 
         RestAssured.baseURI = url;
 
-        Response response = (Response) RestAssured.given()
-                .relaxedHTTPSValidation()
-                .contentType(ContentType.JSON)
+        Response response = initRequest(ContentType.JSON)
 //                .param(parameterName, parameterValue)
 //                .param("clientId", "curso")
 //                .param("nome", "Carol")
@@ -87,6 +80,22 @@ public class consultaCEPTest {
         assertEquals("Mansões Santo Antônio", json.get("bairro"));
         assertEquals("Rua Hermantino Coelho", json.get("logradouro"));
         assertEquals("Campinas", json.get("localidade"));
+    }
+
+    public RequestSpecification initRequest(ContentType contentType){
+        return RestAssured.given()
+                .relaxedHTTPSValidation() //SSL para sites com certificado não válido
+                .contentType(contentType);
+                //.proxy(host, port) - caso a empresa trabalhe com proxy, ele seria colocado aqui
+    }
+
+    public Response get(String endpoint){
+       return initRequest(ContentType.JSON)
+                .when()
+                .get(endpoint)
+                .then()
+                .extract()
+                .response();
     }
 
 }
