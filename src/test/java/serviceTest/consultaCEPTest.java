@@ -16,15 +16,33 @@ public class consultaCEPTest {
     String url = "http://viacep.com.br/ws/";
 
     @Test
-    public void validaStatusCode() {
+    public void validaStatusCodeLong() {
         String cep = "13087500";
         String endpoint = cep.concat("/json/"); // ou pode usar endpoint = cep+"/json/";
+
+        RestAssured.baseURI = url;
+
+        RestAssured.given()
+                .relaxedHTTPSValidation()
+                .contentType(ContentType.JSON)
+                .when()
+                .get(endpoint)
+                .then()
+                .statusCode(200);
+    }
+
+    @Test
+    public void validaStatusCodeShort() {
+        String cep = "13087500";
+        String endpoint = cep.concat("/json/");
 
         RestAssured.baseURI = url;
 
         Response response = get(endpoint);
         assertEquals(200, response.statusCode());
     }
+
+
 
     @Test
     public void validaDadosCEPHeaders(){
@@ -36,8 +54,7 @@ public class consultaCEPTest {
 
         RestAssured.baseURI = url;
 
-        Response response = initRequest(ContentType.JSON)
-                .headers(header)
+        Response response = initRequest(ContentType.JSON, header)
                 .when()
                 .get(endpoint)
                 .then()
@@ -64,9 +81,8 @@ public class consultaCEPTest {
         RestAssured.baseURI = url;
 
         Response response = initRequest(ContentType.JSON)
-//                .param(parameterName, parameterValue)
-//                .param("clientId", "curso")
-//                .param("nome", "Carol")
+//                .param("clientId", "curso") --- pode usar assim ou o map
+//                .param("nome", "Carol") --- pode usar assim ou o map
                 .params(param)
                 .when()
                 .get(endpoint)
@@ -91,11 +107,19 @@ public class consultaCEPTest {
 
     public Response get(String endpoint){
        return initRequest(ContentType.JSON)
-                .when()
-                .get(endpoint)
-                .then()
-                .extract()
-                .response();
+           .when()
+           .get(endpoint)
+           .then()
+           .extract()
+           .response();
+    }
+
+
+    public RequestSpecification initRequest(ContentType contentType, LinkedHashMap<String, String> header){
+        return RestAssured.given()
+                .relaxedHTTPSValidation() //SSL para sites com certificado não válido
+                .contentType(contentType)
+                .headers(header);
     }
 
 }
