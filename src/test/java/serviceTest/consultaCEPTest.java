@@ -4,21 +4,19 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 import org.junit.Test;
-
+import utils.RestUtils;
 import java.util.LinkedHashMap;
-
-import static org.junit.Assert.assertEquals;
+import static junit.framework.Assert.assertEquals;
 
 public class consultaCEPTest {
-    //http://viacep.com.br/ws/{{cep}}/json/
     String url = "http://viacep.com.br/ws/";
 
     @Test
     public void validaStatusCodeLong() {
+        //http://viacep.com.br/ws/{{cep}}/json/
         String cep = "13087500";
-        String endpoint = cep.concat("/json/"); // ou pode usar endpoint = cep+"/json/";
+        String endpoint = cep.concat("/json/"); // ou pode usar endpoint = cep+"/json/"
 
         RestAssured.baseURI = url;
 
@@ -36,13 +34,11 @@ public class consultaCEPTest {
         String cep = "13087500";
         String endpoint = cep.concat("/json/");
 
-        RestAssured.baseURI = url;
+        RestUtils.setUrl(url);
 
-        Response response = get(endpoint);
-        assertEquals(200, response.statusCode());
+        RestUtils.get(endpoint);
+        assertEquals(200, RestUtils.getStatusCode());
     }
-
-
 
     @Test
     public void validaDadosCEPHeaders(){
@@ -52,21 +48,14 @@ public class consultaCEPTest {
         header.put("clientId", "curso");
         header.put("Authorization", "Basic Y2Fyb2w6dGVzdGU=");
 
-        RestAssured.baseURI = url;
+        RestUtils.setUrl(url);
 
-        Response response = initRequest(ContentType.JSON, header)
-                .when()
-                .get(endpoint)
-                .then()
-                .statusCode(200)
-                .extract()
-                .response();
+        RestUtils.get(endpoint, header);
 
-        JsonPath json = response.getBody().jsonPath();
-
-        assertEquals("Mansões Santo Antônio", json.get("bairro"));
-        assertEquals("Rua Hermantino Coelho", json.get("logradouro"));
-        assertEquals("Campinas", json.get("localidade"));
+        assertEquals(200, RestUtils.getStatusCode());
+        assertEquals("Mansões Santo Antônio", RestUtils.getValue("bairro"));
+        assertEquals("Rua Hermantino Coelho", RestUtils.getValue("logradouro"));
+        assertEquals("Campinas", RestUtils.getValue("localidade"));
     }
 
 
@@ -78,48 +67,15 @@ public class consultaCEPTest {
         param.put("clientId", "curso");
         param.put("nome", "Carol");
 
-        RestAssured.baseURI = url;
+        RestUtils.setUrl(url);
 
-        Response response = initRequest(ContentType.JSON)
-//                .param("clientId", "curso") --- pode usar assim ou o map
-//                .param("nome", "Carol") --- pode usar assim ou o map
-                .params(param)
-                .when()
-                .get(endpoint)
-                .then()
-                .statusCode(200)
-                .extract()
-                .response();
+        RestUtils.getParams(endpoint, param);
 
-        JsonPath json = response.getBody().jsonPath();
-
-        assertEquals("Mansões Santo Antônio", json.get("bairro"));
-        assertEquals("Rua Hermantino Coelho", json.get("logradouro"));
-        assertEquals("Campinas", json.get("localidade"));
-    }
-
-    public RequestSpecification initRequest(ContentType contentType){
-        return RestAssured.given()
-                .relaxedHTTPSValidation() //SSL para sites com certificado não válido
-                .contentType(contentType);
-                //.proxy(host, port) - caso a empresa trabalhe com proxy, ele seria colocado aqui
-    }
-
-    public Response get(String endpoint){
-       return initRequest(ContentType.JSON)
-           .when()
-           .get(endpoint)
-           .then()
-           .extract()
-           .response();
-    }
-
-
-    public RequestSpecification initRequest(ContentType contentType, LinkedHashMap<String, String> header){
-        return RestAssured.given()
-                .relaxedHTTPSValidation() //SSL para sites com certificado não válido
-                .contentType(contentType)
-                .headers(header);
+        assertEquals(200, RestUtils.getStatusCode());
+        assertEquals("Mansões Santo Antônio", RestUtils.getValue("bairro"));
+        assertEquals("Rua Hermantino Coelho", RestUtils.getValue("logradouro"));
+        assertEquals("Campinas", RestUtils.getValue("localidade"));
+        // se houver bug na primeira validação, os seguintes testes não são executados
     }
 
 }
